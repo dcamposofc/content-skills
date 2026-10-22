@@ -1,0 +1,179 @@
+<template>
+  <style>
+    #root {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: var(--color-ground);
+    }
+    #intro-plate {
+      position: absolute;
+      inset: 0;
+    }
+    #intro-cam {
+      position: absolute;
+      inset: 0;
+    }
+    #intro-avatar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1920px;
+      height: 1080px;
+      object-fit: cover;
+    }
+    /* Local dark pool under the title, over the coat; radial so it doesn't band. */
+    #intro-scrim {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(
+        ellipse 58% 42% at 50% 100%,
+        rgba(8, 5, 3, 0.94) 0%,
+        rgba(8, 5, 3, 0.7) 45%,
+        rgba(8, 5, 3, 0) 100%
+      );
+    }
+    /* Venetian blinds: the noir reveal and the closing wipe. */
+    #intro-blinds {
+      position: absolute;
+      inset: 0;
+    }
+    .intro-slat {
+      position: absolute;
+      left: 0;
+      width: 1920px;
+      height: 136px;
+      background: var(--color-ground);
+    }
+    #intro-title {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 138px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #intro-name {
+      font-family: "League Gothic", sans-serif;
+      font-size: 176px;
+      line-height: 0.9;
+      color: var(--color-ink);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      text-shadow: 0 6px 30px rgba(0, 0, 0, 0.6);
+      white-space: nowrap;
+    }
+    #intro-rule {
+      width: 420px;
+      height: 4px;
+      margin: 18px 0 20px;
+      background: var(--color-accent);
+    }
+    #intro-tag {
+      font-family: "EB Garamond", serif;
+      font-style: italic;
+      font-size: 40px;
+      color: var(--color-accent);
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+    }
+  </style>
+
+  <div id="root" data-composition-id="intro" data-width="1920" data-height="1080">
+    <div id="intro-plate" class="clip" data-start="0" data-duration="5" data-track-index="0">
+      <div id="intro-cam">
+        <img id="intro-avatar" src="assets/avatar.jpg" data-var-src="avatar" alt="Avatar" />
+      </div>
+    </div>
+
+    <div id="intro-scrim" class="clip" data-start="0" data-duration="5" data-track-index="1"></div>
+
+    <div
+      id="intro-title"
+      class="clip"
+      data-start="1.2"
+      data-duration="3.8"
+      data-track-index="2"
+      data-layout-allow-overlap
+    >
+      <div id="intro-name" data-var-text="channel-name">DCAMPOS</div>
+      <div id="intro-rule"></div>
+      <div id="intro-tag" data-var-text="tagline">tecnologia · IA · execução</div>
+    </div>
+
+    <div
+      id="intro-blinds"
+      class="clip"
+      data-start="0"
+      data-duration="5"
+      data-track-index="3"
+      data-layout-ignore
+    >
+      <div class="intro-slat" style="top: 0px"></div>
+      <div class="intro-slat" style="top: 135px"></div>
+      <div class="intro-slat" style="top: 270px"></div>
+      <div class="intro-slat" style="top: 405px"></div>
+      <div class="intro-slat" style="top: 540px"></div>
+      <div class="intro-slat" style="top: 675px"></div>
+      <div class="intro-slat" style="top: 810px"></div>
+      <div class="intro-slat" style="top: 945px"></div>
+    </div>
+  </div>
+
+  <script>
+    const tl = gsap.timeline({ paused: true });
+
+    // 0.15–1.25 s: blinds open top to bottom, the camera settles onto the avatar.
+    tl.fromTo(
+      ".intro-slat",
+      { scaleY: 1, transformOrigin: "50% 0%" },
+      { scaleY: 0, duration: 0.7, ease: "expo.out", stagger: 0.06 },
+      0.15,
+    );
+    tl.fromTo(
+      "#intro-cam",
+      { scale: 1.14, filter: "brightness(0.55)" },
+      { scale: 1, filter: "brightness(1)", duration: 1.6, ease: "power2.out" },
+      0.1,
+    );
+    tl.fromTo("#intro-scrim", { opacity: 0 }, { opacity: 1, duration: 0.8, ease: "power2.inOut" }, 0.8);
+
+    // 1.2 s: the name blurs in while it closes horizontally, then holds dead still.
+    tl.fromTo(
+      "#intro-name",
+      { opacity: 0, filter: "blur(10px)", scaleX: 1.22 },
+      { opacity: 1, filter: "blur(0px)", scaleX: 1, duration: 0.7, ease: "expo.out" },
+      1.2,
+    );
+    // 1.6 s: the brass rule draws out from the centre.
+    tl.fromTo(
+      "#intro-rule",
+      { scaleX: 0 },
+      { scaleX: 1, duration: 0.55, ease: "expo.out" },
+      1.6,
+    );
+    // 1.85 s: the tagline blurs in.
+    tl.fromTo(
+      "#intro-tag",
+      { opacity: 0, filter: "blur(8px)" },
+      { opacity: 1, filter: "blur(0px)", duration: 0.2, ease: "power4.out" },
+      1.85,
+    );
+
+    // 4.25 s: title blurs out, then the blinds snap shut to black by 4.9 s.
+    tl.to(
+      "#intro-title > *",
+      { opacity: 0, filter: "blur(8px)", duration: 0.2, ease: "power3.in", stagger: 0.04 },
+      4.25,
+    );
+    tl.fromTo(
+      ".intro-slat",
+      { scaleY: 0, transformOrigin: "50% 100%" },
+      { scaleY: 1, duration: 0.38, ease: "power3.in", stagger: 0.025, immediateRender: false },
+      4.35,
+    );
+
+    window.__timelines["intro"] = tl;
+  </script>
+</template>
